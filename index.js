@@ -38,8 +38,13 @@ const airDropSol = async() => {
 	try {
 		const connection = new Connection(clusterApiUrl('devnet'), confirmationStrategy)
 		const fromAirDropSignature = await connection.requestAirdrop(publicKey, 2 * LAMPORTS_PER_SOL)
+		const latestBlockHash = await connection.getLatestBlockhash()
 
-		await connection.confirmTransaction(fromAirDropSignature, confirmationStrategy)
+		await connection.confirmTransaction({
+			blockhash: latestBlockHash.blockhash,
+			lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+			signature: fromAirDropSignature
+		})
 	} catch (err) {
 		console.log(err)
 	}
